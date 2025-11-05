@@ -1,24 +1,27 @@
 "use client";
 
-import { forwardRef } from "react";
 import Markdown from "react-markdown";
+import CodeMirror from "@uiw/react-codemirror";
+import { markdown } from "@codemirror/lang-markdown";
+import { EditorView } from "@codemirror/view";
+import remarkGfm from "remark-gfm";
 
-const EditorPane = forwardRef(({ content, onContentChange }, ref) => {
+export default function EditorPane({ content, onContentChange }) {
   return (
     <div className="flex w-full h-full">
-      <textarea
-        ref={ref}
-        className="w-1/2 h-full border-r border-gray-300 p-4"
+      <CodeMirror
         value={content}
-        onChange={(e) => onContentChange(e.target.value)}
+        onChange={onContentChange}
+        extensions={[
+          markdown(),
+          EditorView.contentAttributes.of({ spellcheck: "true" }),
+        ]}
+        className="w-1/2 h-full border-r border-gray-300"
       />
+
       <div className="w-1/2 h-full p-4">
-        <Markdown>{content}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
       </div>
     </div>
   );
-});
-
-EditorPane.displayName = "EditorPane";
-
-export default EditorPane;
+}

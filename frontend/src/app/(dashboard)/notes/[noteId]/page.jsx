@@ -1,4 +1,3 @@
-// app/(dashboard)/notes/[noteId]/page.jsx
 "use client";
 import { useState, useRef, useEffect, use } from "react";
 import { motion } from "framer-motion";
@@ -9,13 +8,9 @@ import { useNotes } from "../NotesContext";
 
 export default function NotePage({ params }) {
   const resolvedParams = use(params);
-
-  // 2. Get state and handlers from context
   const { allNotes, handleUpdateNote } = useNotes();
-
   const [note, setNote] = useState(null);
   const [content, setContent] = useState("");
-  const editorRef = useRef(null);
 
   useEffect(() => {
     const foundNote = allNotes.find((n) => n.id === resolvedParams.noteId);
@@ -25,25 +20,22 @@ export default function NotePage({ params }) {
 
   const handleNoteChange = (newContent) => {
     setContent(newContent);
-    // When content changes, update the note in the main state
     if (note) {
       handleUpdateNote({ ...note, content: newContent });
     }
   };
 
   const handleSave = () => {
-    // The layout already saves, so we just show a toast
     toast.success("Note saved!");
   };
 
   if (!note) {
-    return;
+    return <div>Loading note...</div>;
   }
 
   return (
     <div className="flex flex-col h-full">
       <ToolBox
-        editorRef={editorRef}
         content={content}
         onContentChange={handleNoteChange}
         onSave={handleSave}
@@ -55,11 +47,7 @@ export default function NotePage({ params }) {
         transition={{ duration: 0.3 }}
         className="flex-1"
       >
-        <EditorPane
-          ref={editorRef}
-          content={content}
-          onContentChange={handleNoteChange}
-        />
+        <EditorPane content={content} onContentChange={handleNoteChange} />
       </motion.div>
     </div>
   );

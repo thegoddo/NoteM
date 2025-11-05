@@ -2,7 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Bold, Italic, List, Save, Link, Table, Smile, Image,
+  Bold,
+  Italic,
+  List,
+  Save,
+  Link,
+  Table,
+  Smile,
+  Image,
 } from "lucide-react";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
@@ -16,58 +23,41 @@ function ToolBoxButton({ icon: Icon, onClick }) {
   );
 }
 
-export default function ToolBox({
-  editorRef,
-  content,
-  onContentChange,
-  onSave, 
-}) {
+export default function ToolBox({ content, onContentChange, onSave }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleSave = () => {
-    if(onSave) {
-      onSave(); 
+    if (onSave) {
+      onSave();
     } else {
       toast.error("Save not configured!");
     }
   };
 
-
   const handleMarkdownInsert = (syntax) => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const { selectionStart, selectionEnd } = editor;
-    const selectedText = content.substring(selectionStart, selectionEnd);
     let newText = "";
-
     switch (syntax) {
       case "bold":
-        newText = `**${selectedText || "text"}**`;
+        newText = "**text**";
         break;
       case "italic":
-        newText = `*${selectedText || "text"}*`;
+        newText = "*text*";
         break;
       case "link":
-        newText = `[${selectedText || "link text"}](url)`;
+        newText = "[link text](url)";
         break;
       case "image":
-        newText = `![${selectedText || "alt text"}](image_url)`;
+        newText = "![alt text](image_url)";
         break;
       case "table":
-        newText = `\n| Header 1 | Header 2 |\n| -------- | -------- |\n| Cell 1   | Cell 2   |\n`;
+        newText =
+          "\n| Header 1 | Header 2 |\n| -------- | -------- |\n| Cell 1   | Cell 2   |\n";
         break;
       default:
         newText = syntax;
     }
 
-    const updateContent =
-      content.substring(0, selectionStart) +
-      newText +
-      content.substring(selectionEnd);
-
-    onContentChange(updateContent);
-    editor.focus();
+    onContentChange(content + "\n" + newText);
   };
 
   const onEmojiClick = (emojiObject) => {
@@ -96,11 +86,14 @@ export default function ToolBox({
         icon={Smile}
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
       />
+
       <div className="flex-1"></div>
+
       <Button variant="ghost" onClick={handleSave}>
         <Save className="h-4 w-4 mr-2" />
         Save
       </Button>
+
       {showEmojiPicker && (
         <div className="absolute top-12 z-10">
           <EmojiPicker onEmojiClick={onEmojiClick} />

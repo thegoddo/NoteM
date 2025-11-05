@@ -1,19 +1,16 @@
-// app/(dashboard)/NoteList.jsx
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FilePlus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotes } from "./notes/NotesContext";
-import { useState } from "react"; // 1. Import useState
-import { Input } from "@/components/ui/input"; // 2. Import Input
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function NoteList() {
   const pathname = usePathname();
-  // 3. Get all notes and handlers from context
   const { allNotes, handleNewNote, handleDeleteNote, handleUpdateNote } = useNotes();
 
-  // 4. Add back the local state for editing
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
 
@@ -25,7 +22,6 @@ export default function NoteList() {
   const handleSaveEdit = () => {
     if (tempTitle.trim() === "") return;
     
-    // Find the original note to create an updated object
     const originalNote = allNotes.find(note => note.id === editingNoteId);
     if (originalNote) {
       handleUpdateNote({ ...originalNote, title: tempTitle });
@@ -54,9 +50,7 @@ export default function NoteList() {
                 : ""
             }`}
           >
-            {/* 5. Check if we are editing this note */}
             {editingNoteId === note.id ? (
-              // 6. If YES, render an Input
               <Input
                 value={tempTitle}
                 onChange={(e) => setTempTitle(e.target.value)}
@@ -68,11 +62,10 @@ export default function NoteList() {
                 autoFocus
               />
             ) : (
-              // 7. If NO, render the link
               <Link
                 href={`/notes/${note.id}`}
                 className="text-left flex-1"
-                onDoubleClick={() => handleStartEditing(note)} // 8. Add double-click
+                onDoubleClick={() => handleStartEditing(note)}
               >
                 {note.title}
               </Link>
