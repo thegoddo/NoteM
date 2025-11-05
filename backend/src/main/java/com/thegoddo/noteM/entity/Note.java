@@ -1,4 +1,5 @@
 package com.thegoddo.noteM.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thegoddo.noteM.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,18 +21,18 @@ public class Note {
     @Column(nullable = false)
     private String title;
 
-    @Lob // Specifies a Large Object, which maps to TEXT type
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @CreationTimestamp // Automatically set when created
+    @CreationTimestamp
     private Instant createdAt;
 
-    @UpdateTimestamp // Automatically set when updated
+    @UpdateTimestamp
     private Instant updatedAt;
 
-    // A note belongs to one user
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 }

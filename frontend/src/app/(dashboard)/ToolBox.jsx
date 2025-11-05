@@ -76,20 +76,12 @@ export default function ToolBox({
   return (
     <div className="h-12 border-b flex items-center p-2 gap-1 relative">
       {isEditing ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsEditing(false)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)}>
           <Eye className="h-4 w-4 mr-2" />
           Read Mode
         </Button>
       ) : (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsEditing(true)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
           <Edit className="h-4 w-4 mr-2" />
           Edit
         </Button>
@@ -97,27 +89,52 @@ export default function ToolBox({
 
       {isEditing && (
         <>
-          <ToolBoxButton icon={Bold} onClick={() => handleMarkdownInsert("bold")} />
-          <ToolBoxButton icon={Italic} onClick={() => handleMarkdownInsert("italic")} />
-          <ToolBoxButton icon={List} onClick={() => handleMarkdownInsert("* ")} />
-          <ToolBoxButton icon={Link} onClick={() => handleMarkdownInsert("link")} />
-          <ToolBoxButton icon={Image} onClick={() => handleMarkdownInsert("image")} />
-          <ToolBoxButton icon={Table} onClick={() => handleMarkdownInsert("table")} />
-          <ToolBoxButton icon={Smile} onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
+          <ToolBoxButton
+            icon={Bold}
+            onClick={() => handleMarkdownInsert("bold")}
+          />
+          <ToolBoxButton
+            icon={Italic}
+            onClick={() => handleMarkdownInsert("italic")}
+          />
+          <ToolBoxButton
+            icon={List}
+            onClick={() => handleMarkdownInsert("* ")}
+          />
+          <ToolBoxButton
+            icon={Link}
+            onClick={() => handleMarkdownInsert("link")}
+          />
+          <ToolBoxButton
+            icon={Image}
+            onClick={() => handleMarkdownInsert("image")}
+          />
+          <ToolBoxButton
+            icon={Table}
+            onClick={() => handleMarkdownInsert("table")}
+          />
+          <ToolBoxButton
+            icon={Smile}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowEmojiPicker(!showEmojiPicker);
+            }}
+          />
         </>
       )}
-      
+
       <div className="flex-1"></div>
-      
+
       {isEditing && (
         <Button variant="ghost" onClick={handleSave}>
           <Save className="h-4 w-4 mr-2" />
           Save
         </Button>
       )}
-      
+
       {showEmojiPicker && (
-        <div className="absolute top-12 z-10">
+        <div className="absolute top-12 z-10"
+        onMouseDown={(e) => e.stopPropagation()}>
           <EmojiPicker onEmojiClick={onEmojiClick} />
         </div>
       )}

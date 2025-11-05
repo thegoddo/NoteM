@@ -1,10 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./ThemeProvider";
-import { Toaster } from "sonner";
-import { SWRConfig } from "swr";
-import { fetcher } from "@/lib/api";
-
+import Providers from "./Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -16,18 +12,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <SWRConfig value={{ fetcher }}>
-          {" "}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </SWRConfig>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
