@@ -8,10 +8,12 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
-import { Moon, FileText, User, Search, LogOut, FilePlus } from "lucide-react";
+import { FilePlus } from "lucide-react";
 import EditorPane from "./EditorPane";
 import ToolBox from "./ToolBox";
 import NoteList from "./NoteList";
+import IconSidebar from "./IconSidebar";
+
 const initialNotes = [
   { id: "1", title: "Welcome", content: "# Hello, World!" },
   { id: "2", title: "Groceries", content: "* Milk\n* Eggs\n* Bread" },
@@ -56,6 +58,14 @@ export default function Home() {
     setSelectedNoteId(id);
   };
 
+  const handleUpdateNoteTitle = (id, newTitle) => {
+    setAllNotes((currentNotes) =>
+      currentNotes.map((note) =>
+        note.id === id ? { ...note, title: newTitle } : note
+      )
+    );
+  };
+
   if (!selectedNote) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
@@ -73,19 +83,10 @@ export default function Home() {
       direction="horizontal"
       className="w-full h-screen rounded-lg border"
     >
-      <ResizablePanel
-        defaultSize={4}
-        minSize={4}
-        maxSize={4}
-        className="p-2 pt-4 flex flex-col items-center gap-6 bg-gray-50"
-      >
-        <User className="h-6 w-6" />
-        <FileText className="h-6 w-6" />
-        <Search className="h-6 w-6" />
-        <Moon className="h-6 w-6" />
-        <div className="flex-1"></div>
-        <LogOut className="h-6 w-6" />
+      <ResizablePanel defaultSize={4} minSize={4} maxSize={4}>
+        <IconSidebar />
       </ResizablePanel>
+
       <ResizableHandle withHandle />
 
       <ResizablePanel defaultSize={20} minSize={15}>
@@ -94,6 +95,7 @@ export default function Home() {
           selectedNoteId={selectedNoteId}
           onSelectNote={handleSelectNote}
           onNewNote={handleNewNote}
+          onUpdateNoteTitle={handleUpdateNoteTitle}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
