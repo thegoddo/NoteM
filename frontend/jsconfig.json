@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
+    "types": [],
     "paths": {
       "@/*": ["./src/*"]
     }
+  },
+  "typeAcquisition": {
+    "enable": false
   }
 }
