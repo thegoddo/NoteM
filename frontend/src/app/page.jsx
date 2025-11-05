@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import ToolBox from "./ToolBox";
 
 // Our dummy data for now
 const initialNotes = [
@@ -32,14 +33,6 @@ const initialNotes = [
     content: "* Milk\n Eggs\n Bread",
   },
 ];
-
-function ToolBoxButton({ icon: Icon, onClick }) {
-  return (
-    <Button variant="ghost" size="icon" onClick={onClick}>
-      <Icon className="h-4 w-4" />
-    </Button>
-  );
-}
 
 export default function Home() {
   const [allNotes, setAllNotes] = useState(initialNotes);
@@ -99,9 +92,7 @@ export default function Home() {
       <ResizablePanel defaultSize={76}>
         <div className="flex flex-col h-full">
           <div className="h-12 border-b flex items-center p-4 font-medium">
-            <ToolBoxButton icon={Bold} />
-            <ToolBoxButton icon={Italic} />
-            <ToolBoxButton icon={List} />
+            <ToolBox />
           </div>
 
           <div className="flex-1">
