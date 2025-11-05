@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react/cjs/react.production";
 import Markdown from "react-markdown";
+import { useState } from "react";
 
 export default function EditorPane() {
   const [markdown, setMarkdown] = useState("#Hello, World!");
