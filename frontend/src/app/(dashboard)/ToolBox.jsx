@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import {
   Bold,
+  Eye,
   Italic,
   List,
   Save,
   Link,
+  Edit,
   Table,
   Smile,
   Image,
@@ -23,7 +25,13 @@ function ToolBoxButton({ icon: Icon, onClick }) {
   );
 }
 
-export default function ToolBox({ content, onContentChange, onSave }) {
+export default function ToolBox({
+  content,
+  onContentChange,
+  onSave,
+  isEditing,
+  setIsEditing,
+}) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleSave = () => {
@@ -67,33 +75,47 @@ export default function ToolBox({ content, onContentChange, onSave }) {
 
   return (
     <div className="h-12 border-b flex items-center p-2 gap-1 relative">
-      <ToolBoxButton icon={Bold} onClick={() => handleMarkdownInsert("bold")} />
-      <ToolBoxButton
-        icon={Italic}
-        onClick={() => handleMarkdownInsert("italic")}
-      />
-      <ToolBoxButton icon={List} onClick={() => handleMarkdownInsert("* ")} />
-      <ToolBoxButton icon={Link} onClick={() => handleMarkdownInsert("link")} />
-      <ToolBoxButton
-        icon={Image}
-        onClick={() => handleMarkdownInsert("image")}
-      />
-      <ToolBoxButton
-        icon={Table}
-        onClick={() => handleMarkdownInsert("table")}
-      />
-      <ToolBoxButton
-        icon={Smile}
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      />
+      {isEditing ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsEditing(false)}
+        >
+          <Eye className="h-4 w-4 mr-2" />
+          Read Mode
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsEditing(true)}
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          Edit
+        </Button>
+      )}
 
+      {isEditing && (
+        <>
+          <ToolBoxButton icon={Bold} onClick={() => handleMarkdownInsert("bold")} />
+          <ToolBoxButton icon={Italic} onClick={() => handleMarkdownInsert("italic")} />
+          <ToolBoxButton icon={List} onClick={() => handleMarkdownInsert("* ")} />
+          <ToolBoxButton icon={Link} onClick={() => handleMarkdownInsert("link")} />
+          <ToolBoxButton icon={Image} onClick={() => handleMarkdownInsert("image")} />
+          <ToolBoxButton icon={Table} onClick={() => handleMarkdownInsert("table")} />
+          <ToolBoxButton icon={Smile} onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
+        </>
+      )}
+      
       <div className="flex-1"></div>
-
-      <Button variant="ghost" onClick={handleSave}>
-        <Save className="h-4 w-4 mr-2" />
-        Save
-      </Button>
-
+      
+      {isEditing && (
+        <Button variant="ghost" onClick={handleSave}>
+          <Save className="h-4 w-4 mr-2" />
+          Save
+        </Button>
+      )}
+      
       {showEmojiPicker && (
         <div className="absolute top-12 z-10">
           <EmojiPicker onEmojiClick={onEmojiClick} />

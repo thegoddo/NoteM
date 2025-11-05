@@ -1,16 +1,13 @@
+// app/(dashboard)/notes/layout.jsx
 "use client";
 import { useState, useEffect } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import NoteList from "../NoteList";
-import NotesContext from "./NotesContext"; 
-import { v4 as uuidv4 } from "uuid"; 
-import { useRouter } from "next/navigation"; 
-import { toast } from "sonner"; 
+import NotesContext from "./NotesContext";
+import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+// Helper function to get notes
 function getNotes() {
   if (typeof window !== "undefined") {
     const savedNotes = localStorage.getItem("my-notes");
@@ -26,10 +23,12 @@ export default function NotesLayout({ children }) {
   const [allNotes, setAllNotes] = useState([]);
   const router = useRouter();
 
+  // Load notes on mount
   useEffect(() => {
     setAllNotes(getNotes());
   }, []);
 
+  // Save notes whenever they change
   useEffect(() => {
     if (allNotes.length > 0) {
       localStorage.setItem("my-notes", JSON.stringify(allNotes));
@@ -44,13 +43,13 @@ export default function NotesLayout({ children }) {
     };
     setAllNotes((prevNotes) => [newNote, ...prevNotes]);
     toast.success("New note created!");
-    router.push(`/notes/${newNote.id}`); 
+    router.push(`/notes/${newNote.id}`);
   };
 
   const handleDeleteNote = (id) => {
     setAllNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
     toast.error("Note deleted");
-    router.push("/notes"); 
+    router.push("/notes");
   };
 
   const handleUpdateNote = (updatedNote) => {
@@ -63,13 +62,15 @@ export default function NotesLayout({ children }) {
     <NotesContext.Provider
       value={{ allNotes, handleNewNote, handleDeleteNote, handleUpdateNote }}
     >
-      <ResizablePanelGroup direction="horizontal" className="w-full h-full">
-        <ResizablePanel defaultSize={20} minSize={15}>
+      <div className="flex h-full">
+        <div className="w-[280px]">
           <NoteList />
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={76}>{children}</ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+
+        <div className="flex-1 border-l">
+          {children} 
+        </div>
+      </div>
     </NotesContext.Provider>
   );
 }

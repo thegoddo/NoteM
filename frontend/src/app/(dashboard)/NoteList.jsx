@@ -54,7 +54,7 @@ export default function NoteList() {
               <Input
                 value={tempTitle}
                 onChange={(e) => setTempTitle(e.target.value)}
-                onBlur={handleSaveEdit} // Save when user clicks away
+                onBlur={handleSaveEdit} 
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSaveEdit();
                   if (e.key === "Escape") setEditingNoteId(null);
