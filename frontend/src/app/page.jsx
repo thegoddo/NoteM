@@ -1,25 +1,20 @@
 "use client";
+import { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { v4 as uuidv4 } from "uuid";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
+import { Moon, FileText, User, Search, LogOut, FilePlus } from "lucide-react";
 import EditorPane from "./EditorPane";
-import { FileText, LogOut, Moon, Search, User } from "lucide-react";
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
 import ToolBox from "./ToolBox";
+import NoteList from "./NoteList";
 const initialNotes = [
-  {
-    id: 1,
-    title: "Welcome",
-    content: "# Hello, World!",
-  },
-  {
-    id: 2,
-    title: "Groceries",
-    content: "* Milk\n* Eggs\n* Bread",
-  },
+  { id: "1", title: "Welcome", content: "# Hello, World!" },
+  { id: "2", title: "Groceries", content: "* Milk\n* Eggs\n* Bread" },
 ];
 
 export default function Home() {
@@ -36,7 +31,6 @@ export default function Home() {
   );
 
   const editorRef = useRef(null);
-
   const selectedNote = allNotes.find((note) => note.id === selectedNoteId);
 
   const handleNoteChange = (newContent) => {
@@ -47,9 +41,30 @@ export default function Home() {
     );
   };
 
+  const handleNewNote = () => {
+    const newNote = {
+      id: uuidv4(),
+      title: "Untitled Note",
+      content: "...",
+    };
+    const updatedNotes = [newNote, ...allNotes];
+    setAllNotes(updatedNotes);
+    setSelectedNoteId(newNote.id);
+  };
+
+  const handleSelectNote = (id) => {
+    setSelectedNoteId(id);
+  };
+
   if (!selectedNote) {
     return (
-      <div className="flex items-center justify-center h-screen">No notes.</div>
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <h1 className="text-2xl font-semibold">No notes.</h1>
+        <Button onClick={handleNewNote}>
+          <FilePlus className="h-4 w-4 mr-2" />
+          Create a new note
+        </Button>
+      </div>
     );
   }
 
@@ -68,29 +83,18 @@ export default function Home() {
         <FileText className="h-6 w-6" />
         <Search className="h-6 w-6" />
         <Moon className="h-6 w-6" />
-
         <div className="flex-1"></div>
         <LogOut className="h-6 w-6" />
       </ResizablePanel>
       <ResizableHandle withHandle />
 
       <ResizablePanel defaultSize={20} minSize={15}>
-        <div className="p-4">
-          <h2 className="font-bold text-lg">My List of Saved Notes</h2>
-          <div className="flex flex-col gap-2">
-            {allNotes.map((note) => (
-              <button
-                key={note.id}
-                className={`p-2 rounded text-left ${
-                  note.id === selectedNoteId ? "bg-gray-200" : ""
-                }`}
-                onClick={() => setSelectedNoteId(note.id)}
-              >
-                {note.title}
-              </button>
-            ))}
-          </div>
-        </div>
+        <NoteList
+          allNotes={allNotes}
+          selectedNoteId={selectedNoteId}
+          onSelectNote={handleSelectNote}
+          onNewNote={handleNewNote}
+        />
       </ResizablePanel>
       <ResizableHandle withHandle />
 
@@ -102,7 +106,6 @@ export default function Home() {
             onContentChange={handleNoteChange}
             allNotes={allNotes}
           />
-
           <motion.div
             key={selectedNote.id}
             initial={{ opacity: 0 }}
