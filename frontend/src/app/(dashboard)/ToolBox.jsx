@@ -1,19 +1,12 @@
-// app/ToolBox.jsx
 "use client";
 
 import { Button } from "@/components/ui/button";
 import {
-  Bold,
-  Italic,
-  List,
-  Save,
-  Link,
-  Table,
-  Smile,
-  Image, // <-- FIX 1: Added Image icon
+  Bold, Italic, List, Save, Link, Table, Smile, Image,
 } from "lucide-react";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
+import { toast } from "sonner";
 
 function ToolBoxButton({ icon: Icon, onClick }) {
   return (
@@ -27,16 +20,18 @@ export default function ToolBox({
   editorRef,
   content,
   onContentChange,
-  allNotes,
+  onSave, 
 }) {
-  // <-- FIX 2: Renamed 'setShowEmojiPickerk' to 'setShowEmojiPicker'
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleSave = () => {
-    // <-- FIX 3: Matched the key from page.jsx
-    localStorage.setItem("my-notes", JSON.stringify(allNotes));
-    alert("Note saved!");
+    if(onSave) {
+      onSave(); 
+    } else {
+      toast.error("Save not configured!");
+    }
   };
+
 
   const handleMarkdownInsert = (syntax) => {
     const editor = editorRef.current;
@@ -77,7 +72,6 @@ export default function ToolBox({
 
   const onEmojiClick = (emojiObject) => {
     handleMarkdownInsert(emojiObject.emoji);
-    // <-- FIX 2 (continued): Using the correct setter name
     setShowEmojiPicker(false);
   };
 
@@ -100,10 +94,9 @@ export default function ToolBox({
       />
       <ToolBoxButton
         icon={Smile}
-        // <-- FIX 2 (continued): Using the correct setter name
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
       />
-      <div className="flex-1"></div> {/* Pushes save to the right */}
+      <div className="flex-1"></div>
       <Button variant="ghost" onClick={handleSave}>
         <Save className="h-4 w-4 mr-2" />
         Save

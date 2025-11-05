@@ -19,7 +19,6 @@ const EditorPane = forwardRef(({ content, onContentChange }, ref) => {
   );
 });
 
-// For Debugging purpose
 EditorPane.displayName = "EditorPane";
 
 export default EditorPane;
