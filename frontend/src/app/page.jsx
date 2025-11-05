@@ -5,8 +5,36 @@ import {
 } from "@/components/ui/resizable";
 import EditorPane from "./EditorPane";
 import { FileText, LogOut, Moon, Search, User } from "lucide-react";
+import { useState } from "react";
+
+// Our dummy data for now
+const initialNotes = [
+  {
+    id: 1,
+    title: "Welcome",
+    content: "# Hello, World!",
+  },
+  {
+    id: 2,
+    title: "Groceries",
+    content: "* Milk\n Eggs\n Bread",
+  },
+];
 
 export default function Home() {
+  const [allNotes, setAllNotes] = useState(initialNotes);
+  const [selectedNoteId, setSelectedNoteId] = useState(initialNotes[0].id);
+
+  const selectedNote = allNotes.find((note) => note.id === selectedNoteId);
+
+  const handleNoteChange = (newContent) => {
+    setAllNotes((currentNotes) =>
+      currentNotes.map((note) =>
+        note.id === selectedNote ? { ...note, content: newContent } : note
+      )
+    );
+  };
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
