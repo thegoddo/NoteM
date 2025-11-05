@@ -1,21 +1,46 @@
 "use client";
 
-import Markdown from "react-markdown";
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  vscDarkPlus,
+  vs,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
-import remarkGfm from "remark-gfm";
-import { useTheme } from "next-themes";
+
+const animation = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.4 },
+};
 
 export default function EditorPane({ content, onContentChange, isEditing }) {
   const { theme } = useTheme();
-  
 
-  const animation = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    transition: { duration: 0.4 },
+  const MarkdownComponents = {
+    code({ node, inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || "");
+      const currentTheme = theme === "dark" ? vscDarkPlus : vs;
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={currentTheme}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
   };
 
   if (isEditing) {
@@ -37,21 +62,23 @@ export default function EditorPane({ content, onContentChange, isEditing }) {
             theme={theme === "dark" ? "dark" : "light"}
           />
         </motion.div>
-        <motion.div
-          {...animation} // 6. Apply the animation
-          className="w-1/2 h-full p-4"
-        >
-          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+        <motion.div {...animation} className="w-1/2 h-full p-4 overflow-y-auto">
+          <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>
+            {content}
+          </Markdown>
         </motion.div>
       </div>
     );
   }
+
   return (
     <motion.div
-      {...animation} // 8. Apply the animation
-      className="prose dark:prose-invert max-w-none w-full h-full p-4"
+      {...animation}
+      className="prose dark:prose-invert max-w-none w-full h-full p-4 overflow-y-auto"
     >
-      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+      <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>
+        {content}
+      </Markdown>
     </motion.div>
   );
 }
