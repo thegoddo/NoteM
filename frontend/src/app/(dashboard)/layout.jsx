@@ -1,22 +1,13 @@
 import IconSidebar from "./IconSidebar";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 
 export default function DashboardLayout({ children }) {
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="w-full h-screen rounded-lg border"
-    >
-      <ResizablePanel defaultSize={4} minSize={4} maxSize={4}>
+    <div className="flex h-screen">
+      <div className="w-14">
         <IconSidebar />
-      </ResizablePanel>
-      <ResizableHandle withHandle />
+      </div>
 
-      <ResizablePanel defaultSize={96}>{children}</ResizablePanel>
-    </ResizablePanelGroup>
+      <div className="flex-1 border-l">{children}</div>
+    </div>
   );
 }

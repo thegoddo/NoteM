@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import NoteList from "../NoteList"; 
+import NoteList from "../NoteList";
 
 function getNotes() {
   if (typeof window !== "undefined") {
@@ -19,18 +14,15 @@ function getNotes() {
 }
 
 export default function NotesLayout({ children }) {
-  const [allNotes, setAllNotes] = useState(getNotes);
-
+  const [allNotes, setAllNotes] = [useState(getNotes)];
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="w-full h-full">
-      <ResizablePanel defaultSize={20} minSize={15}>
+    <div className="flex h-full">
+      <div className="w-[280px]">
         <NoteList allNotes={allNotes} />
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={76}>
-        {children}
-      </ResizablePanel>
-    </ResizablePanelGroup>
+      </div>
+
+      <div className="flex-1 border-l">{children}</div>
+    </div>
   );
 }
