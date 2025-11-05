@@ -1,10 +1,10 @@
 "use client";
 
-import Markdown from "react-markdown";
 import { useState } from "react";
+import Markdown from "react-markdown";
 
 export default function EditorPane() {
-  const [markdown, setMarkdown] = useState("#Hello, World!");
+  const [markdown, setMarkdown] = useState("# Hello, World!");
 
   return (
     <div className="flex w-full h-full">
