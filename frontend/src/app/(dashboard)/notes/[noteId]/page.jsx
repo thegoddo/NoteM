@@ -1,25 +1,18 @@
+// app/(dashboard)/notes/[noteId]/page.jsx
 "use client";
 import { useState, useRef, useEffect, use } from "react";
 import { motion } from "framer-motion";
 import EditorPane from "../../EditorPane";
 import ToolBox from "../../ToolBox";
 import { toast } from "sonner";
-
-function getNotes() {
-  if (typeof window !== "undefined") {
-    const savedNotes = localStorage.getItem("my-notes");
-    if (savedNotes) return JSON.parse(savedNotes);
-  }
-  return [
-    { id: "1", title: "Welcome", content: "# Hello, World!" },
-    { id: "2", title: "Groceries", content: "* Milk\n* Eggs\n* Bread" },
-  ];
-}
+import { useNotes } from "../NotesContext";
 
 export default function NotePage({ params }) {
   const resolvedParams = use(params);
 
-  const [allNotes, setAllNotes] = useState(getNotes);
+  // 2. Get state and handlers from context
+  const { allNotes, handleUpdateNote } = useNotes();
+
   const [note, setNote] = useState(null);
   const [content, setContent] = useState("");
   const editorRef = useRef(null);
@@ -29,22 +22,22 @@ export default function NotePage({ params }) {
     setNote(foundNote);
     setContent(foundNote ? foundNote.content : "");
   }, [resolvedParams, allNotes]);
+
   const handleNoteChange = (newContent) => {
     setContent(newContent);
-
-    const updatedNotes = allNotes.map((n) =>
-      n.id === resolvedParams.noteId ? { ...n, content: newContent } : n
-    );
-    setAllNotes(updatedNotes);
+    // When content changes, update the note in the main state
+    if (note) {
+      handleUpdateNote({ ...note, content: newContent });
+    }
   };
 
   const handleSave = () => {
-    localStorage.setItem("my-notes", JSON.stringify(allNotes));
+    // The layout already saves, so we just show a toast
     toast.success("Note saved!");
   };
 
   if (!note) {
-    return <div>Loading note...</div>;
+    return;
   }
 
   return (
