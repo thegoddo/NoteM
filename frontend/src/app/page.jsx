@@ -7,6 +7,7 @@ import {
 import EditorPane from "./EditorPane";
 import { FileText, LogOut, Moon, Search, User } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 // Our dummy data for now
 const initialNotes = [
@@ -84,10 +85,18 @@ export default function Home() {
           </div>
 
           <div className="flex-1">
-            <EditorPane
-              content={selectedNote.content}
-              onContentChange={handleNoteChange}
-            />
+            <motion.div
+              key={selectedNoteId}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="flex-1"
+            >
+              <EditorPane
+                content={selectedNote.content}
+                onContentChange={handleNoteChange}
+              />
+            </motion.div>
           </div>
         </div>
       </ResizablePanel>
