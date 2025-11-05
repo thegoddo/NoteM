@@ -1,69 +1,61 @@
 // app/(dashboard)/notes/[noteId]/page.jsx
 "use client";
-import { useState, useRef, useEffect, use } from "react"; // 1. Make sure 'use' is imported
+import { useState, useEffect, use } from "react";
 import { motion } from "framer-motion";
 import EditorPane from "../../EditorPane";
 import ToolBox from "../../ToolBox";
 import { toast } from "sonner";
-import { useNotes } from "../NotesContext";
-
-// Helper function to get notes
-function getNotes() {
-  if (typeof window !== "undefined") {
-    const savedNotes = localStorage.getItem("my-notes");
-    if (savedNotes) return JSON.parse(savedNotes);
-  }
-  return [
-    { id: "1", title: "Welcome", content: "# Hello, World!" },
-    { id: "2", title: "Groceries", content: "* Milk\n* Eggs\n* Bread" },
-  ];
-}
+import useSWR, { useSWRConfig } from "swr"; // 1. Import SWR
+import { api } from "@/lib/api"; // 2. Import Axios
 
 export default function NotePage({ params }) {
-  // 2. This is the fix: Unwrap the 'params' Promise.
-  // This MUST be at the top level.
   const resolvedParams = use(params);
+  const { noteId } = resolvedParams;
+  const { mutate } = useSWRConfig();
 
-  // Now, we use 'resolvedParams' everywhere
-  const { allNotes, handleUpdateNote } = useNotes();
+  // 3. Fetch the full note content
+  const { data: note, error } = useSWR(noteId ? `/api/notes/${noteId}` : null);
 
-  const [note, setNote] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [content, setContent] = useState(""); // Local editor state
 
-  // This effect finds the note and sets it.
+  // 4. When the note data loads, update the local content
   useEffect(() => {
-    // 3. Use 'resolvedParams' here
-    const foundNote = allNotes.find((n) => n.id === resolvedParams.noteId);
-    setNote(foundNote);
-  }, [resolvedParams, allNotes]); // 4. Use 'resolvedParams' in the dependency array
+    if (note) {
+      setContent(note.content);
+    }
+  }, [note]);
 
-  // This effect resets the page to "Read Mode"
+  // 5. Reset to read-only when the note ID changes
   useEffect(() => {
     setIsEditing(false);
-  }, [resolvedParams]); // 5. Use 'resolvedParams' here too
+  }, [noteId]);
 
-  const handleNoteChange = (newContent) => {
-    if (note) {
-      // 6. Use 'resolvedParams' in handlers
-      handleUpdateNote({ ...note, content: newContent });
+  const handleSave = async () => {
+    try {
+      const updatedNote = { ...note, content };
+      // 6. Call the API to save
+      await api.put(`/api/notes/${noteId}`, updatedNote);
+
+      // 7. Update the local SWR cache *instantly*
+      // This makes the app feel fast, no re-fetch needed
+      mutate(`/api/notes/${noteId}`, updatedNote, false);
+
+      toast.success("Note saved!");
+      setIsEditing(false);
+    } catch (err) {
+      toast.error("Failed to save note.");
     }
   };
 
-  const handleSave = () => {
-    toast.success("Note saved!");
-  };
-
-  if (!note) {
-    return <div>Loading note...</div>;
-  }
-
-  const noteContent = note.content;
+  if (error) return <div>Failed to load note.</div>;
+  if (!note) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col h-full">
       <ToolBox
-        content={noteContent}
-        onContentChange={handleNoteChange}
+        content={content}
+        onContentChange={setContent} // 8. Editor updates local state
         onSave={handleSave}
         isEditing={isEditing}
         setIsEditing={setIsEditing}
@@ -76,8 +68,8 @@ export default function NotePage({ params }) {
         className="flex-1"
       >
         <EditorPane
-          content={noteContent}
-          onContentChange={handleNoteChange}
+          content={content}
+          onContentChange={setContent}
           isEditing={isEditing}
         />
       </motion.div>

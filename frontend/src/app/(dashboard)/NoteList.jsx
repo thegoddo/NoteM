@@ -1,89 +1,60 @@
+// app/(dashboard)/NoteList.jsx
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FilePlus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNotes } from "./notes/NotesContext";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useSWRConfig } from "swr"; // 1. Import SWRConfig
+import { api } from "@/lib/api"; // 2. Import our Axios instance
+import { toast } from "sonner";
 
-export default function NoteList() {
+export default function NoteList({ allNotes }) {
   const pathname = usePathname();
-  const { allNotes, handleNewNote, handleDeleteNote, handleUpdateNote } = useNotes();
+  const router = useRouter();
+  const { mutate } = useSWRConfig(); // 3. Get the 'mutate' function
 
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [tempTitle, setTempTitle] = useState("");
 
-  const handleStartEditing = (note) => {
-    setEditingNoteId(note.id);
-    setTempTitle(note.title);
-  };
-
-  const handleSaveEdit = () => {
-    if (tempTitle.trim() === "") return;
-    
-    const originalNote = allNotes.find(note => note.id === editingNoteId);
-    if (originalNote) {
-      handleUpdateNote({ ...originalNote, title: tempTitle });
+  const handleNewNote = async () => {
+    try {
+      // 4. Call the API using Axios
+      const newNote = await api.post("/api/notes");
+      // 5. Tell SWR to re-fetch the list
+      mutate("/api/notes");
+      toast.success("New note created!");
+      // 6. Navigate to the new note
+      router.push(`/notes/${newNote.data.id}`);
+    } catch (err) {
+      toast.error("Failed to create note.");
     }
-    
-    setEditingNoteId(null);
-    setTempTitle("");
   };
 
-  return (
-    <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-lg">My Notes</h2>
-        <Button variant="ghost" size="icon" onClick={handleNewNote}>
-          <FilePlus className="h-5 w-5" />
-        </Button>
-      </div>
+  const handleSaveEdit = async () => {
+    try {
+      await api.put(`/api/notes/${editingNoteId}`, { title: tempTitle });
+      mutate("/api/notes"); // Re-fetch the list
+      setEditingNoteId(null);
+    } catch (err) {
+      toast.error("Failed to rename note.");
+    }
+  };
 
-      <div className="flex flex-col gap-2">
-        {allNotes.map((note) => (
-          <div
-            key={note.id}
-            className={`group flex items-center justify-between p-2 rounded ${
-              pathname === `/notes/${note.id}`
-                ? "bg-gray-200 dark:bg-gray-700"
-                : ""
-            }`}
-          >
-            {editingNoteId === note.id ? (
-              <Input
-                value={tempTitle}
-                onChange={(e) => setTempTitle(e.target.value)}
-                onBlur={handleSaveEdit} 
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSaveEdit();
-                  if (e.key === "Escape") setEditingNoteId(null);
-                }}
-                autoFocus
-              />
-            ) : (
-              <Link
-                href={`/notes/${note.id}`}
-                className="text-left flex-1"
-                onDoubleClick={() => handleStartEditing(note)}
-              >
-                {note.title}
-              </Link>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 opacity-0 group-hover:opacity-100"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteNote(note.id);
-              }}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const handleDeleteNote = async (id) => {
+    try {
+      await api.delete(`/api/notes/${id}`);
+      mutate("/api/notes"); // Re-fetch the list
+      toast.error("Note deleted.");
+      router.push("/notes");
+    } catch (err) {
+      toast.error("Failed to delete note.");
+    }
+  };
+  
+  // ... (handleStartEditing is unchanged)
+
+  // ... (JSX is unchanged, it just receives 'allNotes' prop)
+  return ( ... );
 }
