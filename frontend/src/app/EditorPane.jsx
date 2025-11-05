@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef } from "react";
 import Markdown from "react-markdown";
 
-export default function EditorPane({ content, onContentChange }) {
-  // const [markdown, setMarkdown] = useState("# Hello, World!");
-
+const EditorPane = forwardRef(({ content, onContentChange }, ref) => {
   return (
     <div className="flex w-full h-full">
       <textarea
+        ref={ref}
         className="w-1/2 h-full border-r border-gray-300 p-4"
         value={content}
         onChange={(e) => onContentChange(e.target.value)}
@@ -18,4 +17,9 @@ export default function EditorPane({ content, onContentChange }) {
       </div>
     </div>
   );
-}
+});
+
+// For Debugging purpose
+EditorPane.displayName = "EditorPane";
+
+export default EditorPane;

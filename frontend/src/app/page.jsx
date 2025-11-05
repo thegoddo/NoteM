@@ -4,23 +4,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Button } from "@/components/ui/button";
 import EditorPane from "./EditorPane";
-import {
-  FileText,
-  LogOut,
-  Moon,
-  Search,
-  User,
-  Bold,
-  Italic,
-  List,
-} from "lucide-react";
-import { useState } from "react";
+import { FileText, LogOut, Moon, Search, User } from "lucide-react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import ToolBox from "./ToolBox";
-
-// Our dummy data for now
 const initialNotes = [
   {
     id: 1,
@@ -30,23 +18,40 @@ const initialNotes = [
   {
     id: 2,
     title: "Groceries",
-    content: "* Milk\n Eggs\n Bread",
+    content: "* Milk\n* Eggs\n* Bread",
   },
 ];
 
 export default function Home() {
-  const [allNotes, setAllNotes] = useState(initialNotes);
-  const [selectedNoteId, setSelectedNoteId] = useState(initialNotes[0].id);
+  const [allNotes, setAllNotes] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedNotes = localStorage.getItem("my-notes");
+      if (savedNotes) return JSON.parse(savedNotes);
+    }
+    return initialNotes;
+  });
+
+  const [selectedNoteId, setSelectedNoteId] = useState(
+    (allNotes[0] && allNotes[0].id) || null
+  );
+
+  const editorRef = useRef(null);
 
   const selectedNote = allNotes.find((note) => note.id === selectedNoteId);
 
   const handleNoteChange = (newContent) => {
     setAllNotes((currentNotes) =>
       currentNotes.map((note) =>
-        note.id === selectedNote ? { ...note, content: newContent } : note
+        note.id === selectedNoteId ? { ...note, content: newContent } : note
       )
     );
   };
+
+  if (!selectedNote) {
+    return (
+      <div className="flex items-center justify-center h-screen">No notes.</div>
+    );
+  }
 
   return (
     <ResizablePanelGroup
@@ -91,24 +96,26 @@ export default function Home() {
 
       <ResizablePanel defaultSize={76}>
         <div className="flex flex-col h-full">
-          <div className="h-12 border-b flex items-center p-4 font-medium">
-            <ToolBox />
-          </div>
+          <ToolBox
+            editorRef={editorRef}
+            content={selectedNote.content}
+            onContentChange={handleNoteChange}
+            allNotes={allNotes}
+          />
 
-          <div className="flex-1">
-            <motion.div
-              key={selectedNoteId}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1"
-            >
-              <EditorPane
-                content={selectedNote.content}
-                onContentChange={handleNoteChange}
-              />
-            </motion.div>
-          </div>
+          <motion.div
+            key={selectedNote.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex-1"
+          >
+            <EditorPane
+              ref={editorRef}
+              content={selectedNote.content}
+              onContentChange={handleNoteChange}
+            />
+          </motion.div>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
