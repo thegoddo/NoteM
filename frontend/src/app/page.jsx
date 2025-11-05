@@ -4,8 +4,18 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
 import EditorPane from "./EditorPane";
-import { FileText, LogOut, Moon, Search, User } from "lucide-react";
+import {
+  FileText,
+  LogOut,
+  Moon,
+  Search,
+  User,
+  Bold,
+  Italic,
+  List,
+} from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -22,6 +32,14 @@ const initialNotes = [
     content: "* Milk\n Eggs\n Bread",
   },
 ];
+
+function ToolBoxButton({ icon: Icon, onClick }) {
+  return (
+    <Button variant="ghost" size="icon" onClick={onClick}>
+      <Icon className="h-4 w-4" />
+    </Button>
+  );
+}
 
 export default function Home() {
   const [allNotes, setAllNotes] = useState(initialNotes);
@@ -81,7 +99,9 @@ export default function Home() {
       <ResizablePanel defaultSize={76}>
         <div className="flex flex-col h-full">
           <div className="h-12 border-b flex items-center p-4 font-medium">
-            Text Tool Box
+            <ToolBoxButton icon={Bold} />
+            <ToolBoxButton icon={Italic} />
+            <ToolBoxButton icon={List} />
           </div>
 
           <div className="flex-1">
