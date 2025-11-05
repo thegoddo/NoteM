@@ -1,3 +1,4 @@
+"use client";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -59,6 +60,19 @@ export default function Home() {
       <ResizablePanel defaultSize={20} minSize={15}>
         <div className="p-4">
           <h2 className="font-bold text-lg">My List of Saved Notes</h2>
+          <div className="flex flex-col gap-2">
+            {allNotes.map((note) => (
+              <button
+                key={note.id}
+                className={`p-2 rounded text-left ${
+                  note.id === selectedNoteId ? "bg-gray-200" : ""
+                }`}
+                onClick={() => setSelectedNoteId(note.id)}
+              >
+                {note.title}
+              </button>
+            ))}
+          </div>
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
@@ -70,7 +84,10 @@ export default function Home() {
           </div>
 
           <div className="flex-1">
-            <EditorPane />
+            <EditorPane
+              content={selectedNote.content}
+              onContentChange={handleNoteChange}
+            />
           </div>
         </div>
       </ResizablePanel>
