@@ -123,6 +123,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>noteM</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
