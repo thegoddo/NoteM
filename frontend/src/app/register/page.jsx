@@ -79,7 +79,9 @@ export default function RegisterPage() {
           </div>
         </div>
         <Button variant="outline" className="w-full" asChild>
-          <a href="http://localhost:8080/oauth2/authorization/google">
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/google`}
+          >
             Sign up with Google
           </a>
         </Button>
