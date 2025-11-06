@@ -1,4 +1,5 @@
 package com.thegoddo.noteM.config;
+
 import com.thegoddo.noteM.services.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .oauth2Login( oauth2 -> oauth2
+                .oauth2Login(oauth2 -> oauth2
                         .successHandler(oauth2LoginSuccessHandler)
                         .failureUrl("/login?error=oauth_failed")
                 )
@@ -70,13 +71,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "https://note-m-one.vercel.app",
-                "https://notes-api-latest-yekq.onrender.com"
-        ));
-
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setMaxAge(3600L);
 
